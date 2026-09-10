@@ -1,0 +1,2 @@
+customer_text,gold_intent,gold_should_escalate,gold_escalate_reason,notes
+"example: my order never arrived and its been 2 weeks",order_not_delivered,False,,"replace with real sampled rows"
