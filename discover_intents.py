@@ -14,10 +14,13 @@ import argparse
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
-from anthropic import Anthropic
+from openai import OpenAI
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-MODEL = "claude-sonnet-4-6"
+client = OpenAI(
+    api_key=os.environ.get("GROQ_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
+)
+MODEL = "openai/gpt-oss-120b"
 
 
 def cluster_messages(texts: list[str], n_clusters: int):
@@ -37,8 +40,8 @@ Messages:
 
 Propose a single short snake_case intent label (2-4 words) that captures what this cluster
 is about, e.g. "order_not_delivered" or "refund_request". Respond ONLY with the label."""
-    resp = client.messages.create(model=MODEL, max_tokens=50, messages=[{"role": "user", "content": prompt}])
-    return resp.content[0].text.strip()
+    resp = client.chat.completions.create(model=MODEL, max_tokens=200, messages=[{"role": "user", "content": prompt}])
+    return resp.choices[0].message.content.strip()
 
 
 if __name__ == "__main__":

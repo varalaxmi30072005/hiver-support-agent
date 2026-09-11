@@ -8,7 +8,7 @@ support account, built on the Kaggle "Customer Support on Twitter" dataset.
 
 ```bash
 pip install -r requirements.txt
-export ANTHROPIC_API_KEY=your_key_here
+export GROQ_API_KEY=your_key_here   # free key from console.groq.com, no card needed
 ```
 
 Download `twcs.csv` from Kaggle (thoughtvector/customer-support-on-twitter)

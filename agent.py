@@ -8,34 +8,50 @@ For each incoming customer message:
   3. Draft a reply grounded in those historical resolutions.
   4. Decide auto-handle vs escalate, with a stated reason.
 
-Uses the Anthropic API (claude-sonnet-4-6). Requires ANTHROPIC_API_KEY env var.
+Uses Groq's free API (OpenAI-compatible). Requires GROQ_API_KEY env var.
+Get a free key at https://console.groq.com — no card required.
 
 Usage:
     python src/agent.py --threads data/AmazonHelp_threads.csv --message "my package never arrived"
 """
 import os
+import re
 import json
 import argparse
 import pandas as pd
 import numpy as np
-from anthropic import Anthropic
+from openai import OpenAI
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-MODEL = "claude-sonnet-4-6"
+client = OpenAI(
+    api_key=os.environ.get("GROQ_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
+)
+MODEL = "openai/gpt-oss-120b"
+
+
+def safe_json_parse(text: str) -> dict:
+    """Model output is sometimes wrapped in extra prose/markdown, or the
+    generation gets cut off mid-string. Extract the first {...} block and
+    retry parsing; raise a clear error if still unparseable."""
+    text = text.strip()
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    candidate = match.group(0) if match else text
+    return json.loads(candidate)
 
 # ---- 1. INTENT SET -----------------------------------------------------
-# NOTE: Do not hardcode this blindly. Run src/discover_intents.py first on a
-# sample of your brand's customer_text column, inspect the clusters, and
-# replace this list with what the DATA actually shows. This is a placeholder
-# starting point for a retail/e-commerce brand like AmazonHelp.
+# Derived from clustering 300 real AmazonHelp customer messages
+# (src/discover_intents.py, see data/proposed_intents.json for raw clusters).
+# Clusters were noisy/overlapping in places (TF-IDF on short tweets mixes
+# topics) and mostly non-English clusters were folded into other_or_unclear
+# for this v1 — see report.md "what I chose not to build."
 INTENT_SET = [
-    "order_not_delivered",
-    "wrong_or_damaged_item",
-    "refund_or_return_request",
-    "account_or_login_issue",
-    "billing_or_charge_dispute",
-    "delivery_delay_status_check",
-    "general_complaint_or_feedback",
+    "order_not_delivered",       # package never arrived / marked delivered but wasn't
+    "delivery_delay",            # shipping running later than promised ETA
+    "refund_or_return_request",  # refund, replacement, return questions
+    "account_or_access_issue",   # locked out, login/password problems
+    "billing_or_charge_dispute", # wrong charge amount, unexpected charge
+    "cannot_reach_support",      # how to contact / access live chat / invites
+    "general_feedback_or_thanks",# praise, thanks, non-actionable comments
     "other_or_unclear",
 ]
 
@@ -65,13 +81,13 @@ def classify_intent(message: str) -> dict:
 Customer message: "{message}"
 
 Respond ONLY with JSON: {{"intent": "<one of the above>", "confidence": <0-1 float>, "reasoning": "<one short sentence>"}}"""
-    resp = client.messages.create(
+    resp = client.chat.completions.create(
         model=MODEL,
-        max_tokens=300,
+        max_tokens=500,
         messages=[{"role": "user", "content": prompt}],
     )
-    text = resp.content[0].text.strip().strip("```json").strip("```").strip()
-    return json.loads(text)
+    text = resp.choices[0].message.content.strip().strip("```json").strip("```").strip()
+    return safe_json_parse(text)
 
 
 def draft_reply(message: str, intent: str, grounding_examples: pd.DataFrame) -> str:
@@ -90,12 +106,12 @@ New customer message: "{message}"
 Draft a reply in the brand's voice/style, consistent with how they've actually resolved similar issues above.
 Keep it concise (tweet-length, under 280 chars), empathetic, and actionable.
 Respond ONLY with the reply text, nothing else."""
-    resp = client.messages.create(
+    resp = client.chat.completions.create(
         model=MODEL,
-        max_tokens=200,
+        max_tokens=800,
         messages=[{"role": "user", "content": prompt}],
     )
-    return resp.content[0].text.strip()
+    return resp.choices[0].message.content.strip()
 
 
 def decide_escalation(message: str, intent: str, draft: str) -> dict:
@@ -111,13 +127,13 @@ security, strong negative sentiment/anger, or the drafted reply expresses uncert
 Otherwise, auto-handle is fine for simple status/info questions.
 
 Respond ONLY with JSON: {{"decision": "auto_handle" | "escalate", "reason": "<one short sentence>"}}"""
-    resp = client.messages.create(
+    resp = client.chat.completions.create(
         model=MODEL,
-        max_tokens=200,
+        max_tokens=500,
         messages=[{"role": "user", "content": prompt}],
     )
-    text = resp.content[0].text.strip().strip("```json").strip("```").strip()
-    return json.loads(text)
+    text = resp.choices[0].message.content.strip().strip("```json").strip("```").strip()
+    return safe_json_parse(text)
 
 
 def run_pipeline(message: str, threads: pd.DataFrame) -> dict:

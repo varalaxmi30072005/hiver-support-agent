@@ -20,13 +20,16 @@ import os
 import json
 import argparse
 import pandas as pd
-from anthropic import Anthropic
+from openai import OpenAI
 from sklearn.metrics import accuracy_score, cohen_kappa_score
 
-from agent import run_pipeline
+from agent import run_pipeline, safe_json_parse
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-MODEL = "claude-sonnet-4-6"
+client = OpenAI(
+    api_key=os.environ.get("GROQ_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
+)
+MODEL = "openai/gpt-oss-120b"
 
 JUDGE_RUBRIC = """Score this customer support reply on 3 dimensions, 1 (poor) to 5 (excellent):
 - grounded: does it match how the brand has actually resolved similar issues historically?
@@ -41,9 +44,9 @@ Respond ONLY with JSON: {{"grounded": <1-5>, "helpful": <1-5>, "tone": <1-5>, "o
 
 def llm_judge(message: str, reply: str) -> dict:
     prompt = JUDGE_RUBRIC.format(message=message, reply=reply)
-    resp = client.messages.create(model=MODEL, max_tokens=300, messages=[{"role": "user", "content": prompt}])
-    text = resp.content[0].text.strip().strip("```json").strip("```").strip()
-    return json.loads(text)
+    resp = client.chat.completions.create(model=MODEL, max_tokens=500, messages=[{"role": "user", "content": prompt}])
+    text = resp.choices[0].message.content.strip().strip("```json").strip("```").strip()
+    return safe_json_parse(text)
 
 
 def trivial_baseline(message: str) -> dict:
@@ -82,21 +85,25 @@ def simple_baseline(message: str, threads: pd.DataFrame) -> dict:
 def run_eval(threads: pd.DataFrame, golden: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for row in golden.itertuples():
-        result = run_pipeline(row.customer_text, threads)
-        judge = llm_judge(row.customer_text, result["draft_reply"])
-        rows.append({
-            "customer_text": row.customer_text,
-            "gold_intent": row.gold_intent,
-            "pred_intent": result["intent"],
-            "gold_should_escalate": row.gold_should_escalate,
-            "pred_decision": result["decision"],
-            "pred_reason": result["decision_reason"],
-            "draft_reply": result["draft_reply"],
-            "judge_grounded": judge["grounded"],
-            "judge_helpful": judge["helpful"],
-            "judge_tone": judge["tone"],
-            "judge_overall": judge["overall"],
-        })
+        try:
+            result = run_pipeline(row.customer_text, threads)
+            judge = llm_judge(row.customer_text, result["draft_reply"])
+            rows.append({
+                "customer_text": row.customer_text,
+                "gold_intent": row.gold_intent,
+                "pred_intent": result["intent"],
+                "gold_should_escalate": row.gold_should_escalate,
+                "pred_decision": result["decision"],
+                "pred_reason": result["decision_reason"],
+                "draft_reply": result["draft_reply"],
+                "judge_grounded": judge["grounded"],
+                "judge_helpful": judge["helpful"],
+                "judge_tone": judge["tone"],
+                "judge_overall": judge["overall"],
+            })
+        except Exception as e:
+            print(f"  [skipped row, error: {e}]")
+            continue
     return pd.DataFrame(rows)
 
 

@@ -1,0 +1,92 @@
+{
+  "0": {
+    "label": "general_support_request",
+    "size": 57,
+    "examples": [
+      "@AmazonHelp \u00a1Muchas gracias! \ud83d\udc96",
+      "@AmazonHelp Una reclamaci\u00f3n por vuestra parte.",
+      "@AmazonHelp Remboursement comme \u00e0 chaque fois"
+    ]
+  },
+  "1": {
+    "label": "delivery_issue",
+    "size": 21,
+    "examples": [
+      "@AmazonHelp Amazon.ca says pkg by Nov 12.  Based on all the stories I'm reading on Social Media platforms, I'm more than concerned at their lack of delivery &amp; communication.  I fear you are not partnered with a company in keeping with your high standards &amp; that your're not dealing w/ it.",
+      "@115821 you just cancelled my #primenow order for no reason...  This is my third delivery with issues...  #amazonhelp",
+      "Got my first https://t.co/O3tjitLDnX delivery yesterday under their new delivery service. They delivered to the wrong house! I got a picture of a package by a blue door and had to go to each neighbor's house with that color door. #nomorescavengerhunts #AmazonPrime"
+    ]
+  },
+  "2": {
+    "label": "prime_shipping_delay",
+    "size": 21,
+    "examples": [
+      "@AmazonHelp explain how I order on prime yesterday and it's not due to arrive til Monday? What happened to 2-day shipping? \ud83d\ude21\ud83d\ude21\ud83d\ude21",
+      "@AmazonHelp Bonsoir j'aimerais juste que mon colis soit envoy\u00e9 \u00e0 la date indiqu\u00e9",
+      "@AmazonHelp Sure, I have attached a screenshot below, every time it shows same, even I tried to reset password, but once I reset it, the error is same. https://t.co/Vppez8oFqs"
+    ]
+  },
+  "3": {
+    "label": "general_support_complaint",
+    "size": 42,
+    "examples": [
+      "@AmazonHelp NO! https://t.co/PHnnCwd9hr",
+      "@115821 locked me out of my prime account for weeks! No solution",
+      "Leider passiert das viel zu oft wenn @116316 mit #AmazonLogistics versendet. Und daf\u00fcr zahlt man f\u00fcr Prime... https://t.co/eLnT6myQxI"
+    ]
+  },
+  "4": {
+    "label": "order_delivery_issue",
+    "size": 12,
+    "examples": [
+      "@AmazonHelp I want immediat action. 12 hours too long for me now.Its almost 2 months,I waited a lot, but can't wait now.\n#fraud Amazon",
+      "hi @115850 , recently I am seeing that on some items it is labled as \"10-day replacement only\", suppose even after 1 replacement I have some issue with the product, then can i return it for refund?",
+      "@AmazonHelp why are you removimg @79087 from your tweets? I have official email from @79087 they dont care , they did not sell this product."
+    ]
+  },
+  "5": {
+    "label": "",
+    "size": 23,
+    "examples": [
+      "@116928 @AmazonHelp EVERYTIME we order something to PT, @137864 fails to deliver - even following phone calls &amp; agreed rescheduling. HELL",
+      "@AmazonHelp I have a question about the codes I will be receiving for the pre order of EA Star Wars Battlefront 2.",
+      "@115850 do not commit if you can not deliver on time, still waiting for my phone."
+    ]
+  },
+  "6": {
+    "label": "order_delivery_issue",
+    "size": 16,
+    "examples": [
+      "@116928 12 horas desde que lo ped\u00ed y ya es mia. Sois r\u00e1pidos como el rayo\u26a1\ud83d\udd25 https://t.co/jvxfv8rh6C",
+      "@116316 Seit 11 Uhr wird heute versendet... Es ist jetzt 23:03. Was l\u00e4uft da denn wieder nicht?... #wwe2k18",
+      "@116928 qu\u00e9 pasa \u00faltimamente con lo de \"entrega garantizada\"?!?\nLo que est\u00e1 garantizado \u00faltimamente es recibirlo tarde o muy tarde"
+    ]
+  },
+  "7": {
+    "label": "cannot_reach_support",
+    "size": 35,
+    "examples": [
+      "@AmazonHelp what is contact number or blog page for questions on UK prime",
+      "@AmazonHelp How do I access live chat? I click contact us but only gives me phone or email options.",
+      "@454431 :-( hey @115850 please give me an invite for Echo."
+    ]
+  },
+  "8": {
+    "label": "package_not_received",
+    "size": 34,
+    "examples": [
+      "@AmazonHelp haven't got any email.",
+      "Just received notification of my @115821 credit card for $5K. Your rep indicated it was for $6.5K. Which is it? @115821",
+      "Ive been waiting for a package from @115821. It has been marked delivered from @118706 yesterday at 6 but has not arrived. I\u2019ve been home all day waiting. @115821 has not been helpful! I was actually hoping they would be reliable bc I need that package!"
+    ]
+  },
+  "9": {
+    "label": "order_delivery_status",
+    "size": 39,
+    "examples": [
+      "Commande pass\u00e9e sur Amazon \u00e0 15h21 hier, exp\u00e9di\u00e9e par @AmazonHelp \u00e0 00h15 via Chronopost et colis re\u00e7u en fin de matin\u00e9e (11-12h). \u00c7a fait plaisir de recevoir un colis dans les temps. Voil\u00e0 ce que \u00e7a fait d'\u00e9viter les services de ColisPriv\u00e9 :). Le client va \u00eatre content, Merci !",
+      "@AmazonHelp livraison en boite aux lettres, c'est vous qui devez savoir qui est le transporteur",
+      "Bestelle nie wieder ein spiel bei @116316"
+    ]
+  }
+}
